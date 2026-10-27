@@ -2,8 +2,8 @@
 
 A small Python checkout service for trying [RefactorerLM](https://github.com/jbpextra/RefactorerLM).
 The intentional cyclic dependency between `orders.py` and `pricing.py` gives the tool
-a concrete architectural smell to detect and refactor. Existing tests check the
-service's behavior before and after refactoring.
+a concrete architectural smell to detect and refactor. Included tests provide
+local regression checks for the service and any generated refactoring.
 
 ## Run the demo
 
