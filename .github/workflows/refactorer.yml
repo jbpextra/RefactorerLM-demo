@@ -6,6 +6,8 @@ on:
 jobs:
   refactor:
     uses: jbpextra/RefactorerLM/.github/workflows/refactorer.yml@main
+    with:
+      project_install_command: python -m pip install -r requirements-dev.txt
     permissions:
       contents: write
       pull-requests: write

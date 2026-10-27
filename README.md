@@ -21,6 +21,8 @@ refactoring.
 The workflow calls the standard reusable workflow at
 `jbpextra/RefactorerLM/.github/workflows/refactorer.yml@main`.
 It uses RefactorerLM's default Python version, models, and validation settings.
+Before refactoring, it installs `requirements-dev.txt`, including pytest, so the
+correctness filter can run the demo's regression tests.
 Runs make OpenAI API calls and can open a refactoring pull request after validation.
 The configuration selects both smell types without a proposal limit. The workflow
 uses RefactorerLM's default parallelism.
