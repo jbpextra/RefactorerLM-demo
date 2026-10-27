@@ -1,10 +1,10 @@
-# Refactor the demo's intentional orders/pricing dependency cycle.
+# Refactor the demo's intentional dependency cycle and redundant abstractions.
 target_directory: "."
 smell_filter:
   filter_enabled: true
   include_names:
     - "Cyclic Dependency"
+    - "Potential Redundant Abstractions"
   include_severities:
     - "High"
     - "Medium"
-max_proposal_limit: 1

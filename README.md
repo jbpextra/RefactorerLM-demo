@@ -1,9 +1,15 @@
 # RefactorerLM demo
 
-A small Python checkout service for trying [RefactorerLM](https://github.com/jbpextra/RefactorerLM).
-The intentional cyclic dependency between `orders.py` and `pricing.py` gives the tool
-a concrete architectural smell to detect and refactor. Included tests provide
-local regression checks for the service and any generated refactoring.
+Small Python examples for trying [RefactorerLM](https://github.com/jbpextra/RefactorerLM).
+The source contains two intentional architectural smells:
+
+- **Cyclic Dependency**: `orders.py` and `pricing.py` import one another in the checkout service.
+- **Potential Redundant Abstractions**: `app/screen_coordinates.py` and
+  `app/print_coordinates.py` duplicate the same `normalise`, `clamp`, and `render`
+  functions. Both implementations are used by the public coordinate-label API.
+
+Included tests provide local regression checks for both examples and any generated
+refactoring.
 
 ## Run the demo
 
@@ -16,7 +22,8 @@ The workflow calls the standard reusable workflow at
 `jbpextra/RefactorerLM/.github/workflows/refactorer.yml@main`.
 It uses RefactorerLM's default Python version, models, and validation settings.
 Runs make OpenAI API calls and can open a refactoring pull request after validation.
-The configuration selects at most one cyclic dependency per run.
+The configuration selects both smell types without a proposal limit. The workflow
+uses RefactorerLM's default parallelism.
 
 This repository has a single manually triggered workflow. It contains no timing
 campaign, setup probe, or experiment-specific inputs.
@@ -47,5 +54,17 @@ Amounts are integer cents. Member orders receive a 10% discount, and shipping is
 free when the discounted subtotal reaches 5,000 cents. Empty orders have zero
 totals. Receipt lines retain their input order and duplicates.
 
-The example service and tests come from
+The coordinate-label example clamps each coordinate to `[0, limit]` and formats
+the result as `"x,y"`. Both routes intentionally do the same work:
+
+```python
+from app.api import print_label, screen_label
+
+assert screen_label(-2, 12, 9) == "0,9"
+assert print_label(-2, 12, 9) == "0,9"
+```
+
+The checkout service and its tests come from
 [jbpextra/Refactorer-timing-experiment](https://github.com/jbpextra/Refactorer-timing-experiment/tree/d51786492a5ffcf3a91bfa5bde996043202f2bb3).
+The coordinate-label source and tests are copied unchanged from case **E-RA-01**
+in the [RefactorerLM reproduction package](https://github.com/jbpextra/refactorerlm-reproduction-package/tree/54d74fd884c889baf4a2a54bbf8f4d238940b04b/cases/evaluation/E-RA-01/original).
