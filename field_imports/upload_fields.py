@@ -1,4 +1,10 @@
-"""Escaped semicolon field records."""
+"""UTF-8 upload adapter for escaped semicolon records.
+
+``parse`` is the supported public entry point. Uploads accept text or UTF-8
+bytes and discard one leading UTF-8 BOM. This adapter must work independently
+of the clipboard adapter. The other functions are parsing implementation
+details whose duplication is intentional in this demo.
+"""
 
 
 def scan_fields(text: str) -> tuple[str, ...]:
@@ -45,7 +51,14 @@ def decode_escape(field: str) -> str:
     return "".join(decoded)
 
 
-def parse(text: str) -> tuple[str, ...]:
+def parse(text: str | bytes) -> tuple[str, ...]:
+    """Decode uploaded content and parse its fields without a leading BOM."""
+    if isinstance(text, bytes):
+        text = text.decode("utf-8-sig")
+    elif isinstance(text, str):
+        text = text.removeprefix("\ufeff")
+    else:
+        raise TypeError("uploaded record must be text or UTF-8 bytes")
     fields = scan_fields(text)
     validate_record(fields)
     return tuple(decode_escape(field) for field in fields)

@@ -1,4 +1,10 @@
-"""Escaped semicolon field records."""
+"""Clipboard adapter for escaped semicolon records.
+
+``parse`` is the supported public entry point. Clipboard text, including a
+leading BOM character, is literal; binary input is not accepted. This adapter
+must work independently of the upload adapter. The other functions are parsing
+implementation details whose duplication is intentional in this demo.
+"""
 
 
 def scan_fields(text: str) -> tuple[str, ...]:
@@ -46,6 +52,9 @@ def decode_escape(field: str) -> str:
 
 
 def parse(text: str) -> tuple[str, ...]:
+    """Parse literal clipboard text, preserving whitespace and BOM characters."""
+    if not isinstance(text, str):
+        raise TypeError("pasted record must be text")
     fields = scan_fields(text)
     validate_record(fields)
     return tuple(decode_escape(field) for field in fields)

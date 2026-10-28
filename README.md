@@ -10,8 +10,9 @@ The source contains four intentional architectural smells:
   `app/print_coordinates.py` duplicate the same `normalise`, `clamp`, and `render`
   functions. Both implementations are used by the public coordinate-label API.
 - **Potential Redundant Abstractions (field parsing)**: `field_imports/paste_fields.py`
-  and `field_imports/upload_fields.py` duplicate the parser used by the paste and
-  upload entry points.
+  and `field_imports/upload_fields.py` duplicate their parsing helpers, but their
+  public adapters have distinct input rules and must remain independent. This is
+  the utility-extraction example.
 
 Included tests provide local regression checks for all examples and any generated
 refactoring.
@@ -76,6 +77,26 @@ for ordered payload bundles with validated names and checksums. The field-parsin
 example exposes `field_imports.api.parse_upload` and `parse_paste` for
 semicolon-separated records with escaped separators and backslashes.
 
+## Field-parser refactoring contract
+
+Both `field_imports.upload_fields.parse` and `field_imports.paste_fields.parse`
+are supported public entry points, in addition to the convenience API above.
+
+- Uploads accept text or UTF-8 bytes, discard one leading BOM, and reject invalid
+  UTF-8 with `UnicodeDecodeError`.
+- Clipboard input must be text. A leading BOM character and whitespace are
+  preserved literally; binary input raises `TypeError`.
+- Each adapter must import and work when the other adapter is unavailable.
+
+The intended refactoring is **ExtractUtility**: move the duplicated scanning,
+escape validation, and decoding into a neutral helper, while keeping each
+adapter's own input handling and public `parse` entry point. The parsing helpers
+are implementation details and may move; the public adapter modules may not be
+deleted or made dependent on one another.
+
+Contract tests check these behaviors and independent imports without prescribing
+a helper filename. The demo does not force the planner's strategy label.
+
 The checkout service and its tests come from
 [jbpextra/Refactorer-timing-experiment](https://github.com/jbpextra/Refactorer-timing-experiment/tree/d51786492a5ffcf3a91bfa5bde996043202f2bb3).
 The coordinate-label source and tests are copied unchanged from case **E-RA-01**
@@ -83,4 +104,5 @@ in the [RefactorerLM reproduction package](https://github.com/jbpextra/refactore
 The bundle and field-parsing source and tests reuse cases
 [E-CD-01](https://github.com/jbpextra/refactorerlm-reproduction-package/tree/54d74fd884c889baf4a2a54bbf8f4d238940b04b/cases/evaluation/E-CD-01/original)
 and [E-RA-02](https://github.com/jbpextra/refactorerlm-reproduction-package/tree/54d74fd884c889baf4a2a54bbf8f4d238940b04b/cases/evaluation/E-RA-02/original),
-with package imports renamed to keep the examples independent.
+with package imports renamed to keep the examples independent. The field adapters
+add the input-handling and independence contracts described above.
