@@ -1,11 +1,11 @@
 """Format member records as ordered text manifests."""
 
-import bundle_demo.bundle as bundle
+from bundle_demo.utils import validate_member_name
 
 
 def format_entry(name: str, payload: bytes) -> str:
     """Format one member after validating its name."""
-    bundle.validate_member_name(name)
+    validate_member_name(name)
     checksum = sum(payload) % 256
     return f"{name}:{len(payload)}:{checksum:02x}\n"
 
