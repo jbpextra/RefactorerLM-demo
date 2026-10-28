@@ -1,14 +1,19 @@
 # RefactorerLM demo
 
 Small Python examples for trying [RefactorerLM](https://github.com/jbpextra/RefactorerLM).
-The source contains two intentional architectural smells:
+The source contains four intentional architectural smells:
 
-- **Cyclic Dependency**: `orders.py` and `pricing.py` import one another in the checkout service.
-- **Potential Redundant Abstractions**: `app/screen_coordinates.py` and
+- **Cyclic Dependency (checkout)**: `orders.py` and `pricing.py` import one another.
+- **Cyclic Dependency (bundles)**: `bundle_demo/bundle.py` and
+  `bundle_demo/manifest.py` import one another to validate names and format manifests.
+- **Potential Redundant Abstractions (coordinates)**: `app/screen_coordinates.py` and
   `app/print_coordinates.py` duplicate the same `normalise`, `clamp`, and `render`
   functions. Both implementations are used by the public coordinate-label API.
+- **Potential Redundant Abstractions (field parsing)**: `field_imports/paste_fields.py`
+  and `field_imports/upload_fields.py` duplicate the parser used by the paste and
+  upload entry points.
 
-Included tests provide local regression checks for both examples and any generated
+Included tests provide local regression checks for all examples and any generated
 refactoring.
 
 ## Run the demo
@@ -66,7 +71,16 @@ assert screen_label(-2, 12, 9) == "0,9"
 assert print_label(-2, 12, 9) == "0,9"
 ```
 
+The bundle example exposes `bundle_demo.api.build_bundle` and `preview_manifest`
+for ordered payload bundles with validated names and checksums. The field-parsing
+example exposes `field_imports.api.parse_upload` and `parse_paste` for
+semicolon-separated records with escaped separators and backslashes.
+
 The checkout service and its tests come from
 [jbpextra/Refactorer-timing-experiment](https://github.com/jbpextra/Refactorer-timing-experiment/tree/d51786492a5ffcf3a91bfa5bde996043202f2bb3).
 The coordinate-label source and tests are copied unchanged from case **E-RA-01**
 in the [RefactorerLM reproduction package](https://github.com/jbpextra/refactorerlm-reproduction-package/tree/54d74fd884c889baf4a2a54bbf8f4d238940b04b/cases/evaluation/E-RA-01/original).
+The bundle and field-parsing source and tests reuse cases
+[E-CD-01](https://github.com/jbpextra/refactorerlm-reproduction-package/tree/54d74fd884c889baf4a2a54bbf8f4d238940b04b/cases/evaluation/E-CD-01/original)
+and [E-RA-02](https://github.com/jbpextra/refactorerlm-reproduction-package/tree/54d74fd884c889baf4a2a54bbf8f4d238940b04b/cases/evaluation/E-RA-02/original),
+with package imports renamed to keep the examples independent.

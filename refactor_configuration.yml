@@ -1,4 +1,4 @@
-# Refactor the demo's intentional dependency cycle and redundant abstractions.
+# Refactor the demo's intentional dependency cycles and redundant abstractions.
 target_directory: "."
 smell_filter:
   filter_enabled: true
