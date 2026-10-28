@@ -1,7 +1,6 @@
 """Public coordinate-label functions."""
 
 import app.screen_coordinates as screen_coordinates
-import app.print_coordinates as print_coordinates
 
 
 def screen_label(x: int, y: int, limit: int) -> str:
@@ -20,5 +19,5 @@ def print_label(x: int, y: int, limit: int) -> str:
     Inputs are integers excluding bool. Each coordinate is clamped into
     [0, limit]. A negative limit raises ValueError.
     """
-    bounded_x, bounded_y = print_coordinates.normalise(x, y, limit)
-    return print_coordinates.render(bounded_x, bounded_y)
+    bounded_x, bounded_y = screen_coordinates.normalise(x, y, limit)
+    return screen_coordinates.render(bounded_x, bounded_y)
