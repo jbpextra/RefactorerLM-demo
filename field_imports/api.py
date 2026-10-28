@@ -1,6 +1,5 @@
 """Public field-record ingestion."""
 
-import field_imports.upload_fields as upload_fields
 import field_imports.paste_fields as paste_fields
 
 
@@ -11,7 +10,7 @@ def parse_upload(text: str) -> tuple[str, ...]:
     are retained exactly. Empty text is one empty field. Invalid or dangling
     escapes raise ValueError. There are no side effects.
     """
-    return upload_fields.parse(text)
+    return paste_fields.parse(text)
 
 
 def parse_paste(text: str) -> tuple[str, ...]:
